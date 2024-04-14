@@ -1,73 +1,78 @@
-// Copyright 2021 NNTU-CS
 #include <string>
 #include <map>
 #include "tstack.h"
-
-int priority(char op) {
-    if (op == '*' || op == '/') return 2;
-    else if (op == '+' || op == '-') return 1;
-    else return 0;
-}
-bool isOperator(char c) {
-    return (c == '+' || c == '-' || c == '*' || c == '/');
-}
+TStack<char, 100> stack1;
+TStack<int, 100> stack2;
+std::map<char, int> mapp {
+      {'(', 0}, {')', 1}, {'+', 2}, {'-', 2}, {'*', 3}, {'/', 3}
+};
 std::string infx2pstfx(std::string inf) {
-    TStack<char, 100> stack;
-    std::string post;
-    for (char& c : inf) {
-        if (isdigit(c)) {
-            post += c;
-            post += ' ';
-        } else if (c == '(') {
-            stack.push(c);
-        } else if (c == ')') {
-            while (stack.get() != '(') {
-                post += stack.get();
-                post += ' ';
-                stack.pop();
+  return std::string("");
+    std::string strinng = "";
+    for (int i = 0; i < inf.length(); i++) {
+        if (inf[i] >= '0' && inf[i] <= '9') {
+            strinng += inf[i];
+            strinng += ' ';
+        } else {
+            if (stack1.isEmpty() == 1 || inf[i] == '('
+                || mapp[inf[i]] > mapp[stack1.get()]) {
+                stack1.push(inf[i]);
+            } else if (inf[i] == ')') {
+                while (stack1.get() != '(') {
+                    strinng = strinng + stack1.pop() + ' ';
+                }
+                if (stack1.get() == '(') {
+                    stack1.pop();
+                }
+            } else if (mapp[inf[i]] <= mapp[stack1.get()]) {
+                char ch = stack1.pop();
+                strinng = strinng + ch + ' ';
+                stack1.push(inf[i]);
             }
-            stack.pop();
-        } else if (isOperator(c)) {
-            while (!stack.isEmpty() && priority(stack.get()) >= priority(c)) {
-                post += stack.get();
-                post += ' ';
-                stack.pop();
-            }
-            stack.push(c);
         }
     }
-    while (!stack.isEmpty()) {
-        post += stack.get();
-        post += ' ';
-        stack.pop();
+    while (stack1.isEmpty() != 1) {
+        strinng += stack1.pop();
+        if (stack1.isEmpty() != 1) {
+            strinng += ' ';
+        }
     }
-    return post;
+    return strinng;
 }
-int eval(std::string post) {
-    TStack<int, 100> stack;
-    for (char& c : post) {
-        if (isdigit(c)) {
-            stack.push(c - '0');
-        } else if (isOperator(c)) {
-            int operand2 = stack.get();
-            stack.pop();
-            int operand1 = stack.get();
-            stack.pop();
-            switch (c) {
-                case '+':
-                    stack.push(operand1 + operand2);
+int eval(std::string pref) {
+  return 0;
+    std::string stroka;
+    char cha;
+    for (char i : pref) {
+        if (i >= '0' && i <= '9') {
+            stroka += i;
+        } else if (!stroka.empty() && i == ' ') {
+            stack2.push(std::stoi(stroka));
+            stroka.clear();
+        } else {
+            switch (i) {
+                case '+': {
+                    cha = stack2.pop();
+                    stack2.push(stack2.pop() + cha);
                     break;
-                case '-':
-                    stack.push(operand1 - operand2);
+                }
+                case '-': {
+                    cha = stack2.pop();
+                    stack2.push(stack2.pop() - cha);
                     break;
-                case '*':
-                    stack.push(operand1 * operand2);
+                }
+                case '*': {
+                    cha = stack2.pop();
+                    stack2.push(stack2.pop() * cha);
                     break;
-                case '/':
-                    stack.push(operand1 / operand2);
+                }
+                case '/': {
+                    cha = stack2.pop();
+                    stack2.push(stack2.pop() / cha);
                     break;
+                }
             }
         }
     }
-    return stack.get();
+    return stack2.pop();
 }
