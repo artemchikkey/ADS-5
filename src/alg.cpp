@@ -1,74 +1,118 @@
 #include <string>
-#include <map>
 #include "tstack.h"
+
 TStack<char, 100> stack1;
 TStack<int, 100> stack2;
-std::map<char, int> mapp {
-      {'(', 0}, {')', 1}, {'+', 2}, {'-', 2}, {'*', 3}, {'/', 3}
-};
+
 std::string infx2pstfx(std::string inf) {
-  return std::string("");
-    std::string strinng = "";
-    for (int i = 0; i < inf.length(); i++) {
-        if (inf[i] >= '0' && inf[i] <= '9') {
-            strinng += inf[i];
-            strinng += ' ';
-        } else {
-            if (stack1.isEmpty() == 1 || inf[i] == '('
-                || mapp[inf[i]] > mapp[stack1.get()]) {
-                stack1.push(inf[i]);
-            } else if (inf[i] == ')') {
-                while (stack1.get() != '(') {
-                    strinng = strinng + stack1.pop() + ' ';
+    std::string exit;
+    for (char i : inf) {
+        if (i == '(') {
+            stack1.push(i);
+        } else if (i >= '0' && i <= '9') {
+            exit += i;
+            exit += ' ';
+        } else if (i == ')') {
+            while (stack1.get() != '(' && !stack1.isEmpty()) {
+                exit += stack1.pop();
+                exit += ' ';
+            }
+            if (stack1.get() == '(')
+                stack1.pop();
+        } else if (i == '+' || i == '-') {
+            if (!stack1.isEmpty()) {
+                switch (stack1.get()) {
+                    case '*': {
+                        exit += '*';
+                        exit += ' ';
+                        stack1.pop();
+                        break;
+                    }
+                    case '/': {
+                        exit += '/';
+                        exit += ' ';
+                        stack1.pop();
+                        break;
+                    }
+                    case '+': {
+                        exit += '+';
+                        exit += ' ';
+                        stack1.pop();
+                        break;
+                    }
+                    case '-': {
+                        exit += '-';
+                        exit += ' ';
+                        stack1.pop();
+                        break;
+                    }
                 }
-                if (stack1.get() == '(') {
-                    stack1.pop();
+                stack1.push(i);
+            } else {
+                stack1.push(i);
+            }
+        } else if (i == '*' || i == '/') {
+            if (!stack1.isEmpty()) {
+                switch (stack1.get()) {
+                    case '*': {
+                        exit += '*';
+                        exit += ' ';
+                        stack1.pop();
+                        break;
+                    }
+                    case '/': {
+                        exit += '/';
+                        exit += ' ';
+                        stack1.pop();
+                        break;
+                    }
                 }
-            } else if (mapp[inf[i]] <= mapp[stack1.get()]) {
-                char ch = stack1.pop();
-                strinng = strinng + ch + ' ';
-                stack1.push(inf[i]);
+                stack1.push(i);
+            } else {
+                stack1.push(i);
             }
         }
     }
-    while (stack1.isEmpty() != 1) {
-        strinng += stack1.pop();
-        if (stack1.isEmpty() != 1) {
-            strinng += ' ';
+    if (!stack1.isEmpty()) {
+        while (!stack1.isEmpty()) {
+            exit += stack1.pop();
+            exit += ' ';
         }
+        exit.pop_back();
     }
-    return strinng;
+    return exit;
 }
+
 int eval(std::string pref) {
-  return 0;
-    std::string stroka;
-    char cha;
+    std::string sTemp;
+    char cTemp;
     for (char i : pref) {
-        if (i >= '0' && i <= '9') {
-            stroka += i;
-        } else if (!stroka.empty() && i == ' ') {
-            stack2.push(std::stoi(stroka));
-            stroka.clear();
-        } else {
+        if ((i >= '0' && i <= '9')) {
+            sTemp += i;
+
+        } else if (i == ' ' && !sTemp.empty()) {
+            stack2.push(std::stoi(sTemp));
+            sTemp.clear();
+        } else if (i == '+' || i == '-' || i == '*' || i == '/') {
             switch (i) {
-                case '+': {
-                    cha = stack2.pop();
-                    stack2.push(stack2.pop() + cha);
-                    break;
-                }
-                case '-': {
-                    cha = stack2.pop();
-                    stack2.push(stack2.pop() - cha);
-                    break;
-                }
                 case '*': {
-                    cha = stack2.pop();
-                    stack2.push(stack2.pop() * cha);
+                    cTemp = stack2.pop();
+                    stack2.push(stack2.pop() * cTemp);
                     break;
                 }
                 case '/': {
-                    cha = stack2.pop();
-                    stack2.push(stack2.pop() / cha);
+                    cTemp = stack2.pop();
+                    stack2.push(stack2.pop() / cTemp);
+                    break;
+                }
+                case '+': {
+                    cTemp = stack2.pop();
+                    stack2.push(stack2.pop() + cTemp);
+                    break;
+                }
+                case '-': {
+                    cTemp = stack2.pop();
+                    stack2.push(stack2.pop() - cTemp);
                     break;
                 }
             }
