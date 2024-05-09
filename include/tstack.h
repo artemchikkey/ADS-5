@@ -17,22 +17,22 @@ class TStack {
         if (top <= size - 1)
             data[top++] = item;
         else
-            throw std::string("Full!");
+            throw std::string("Full");
     }
 
     T pop() {
         if (top > 0)
             return data[--top];
         else
-            throw std::string("Empty!");
+            throw std::string("Empty");
     }
 
-    bool isEmpty() {
+    bool Empty() {
         return top == 0;
     }
 
     T get() {
-        if (!isEmpty())
+        if (!Empty())
             return data[top - 1];
         else
             throw std::string("Empty");
