@@ -13,14 +13,14 @@ std::string infx2pstfx(std::string inf) {
             exit += i;
             exit += ' ';
         } else if (i == ')') {
-            while (stack1.get() != '(' && !stack1.isEmpty()) {
+            while (stack1.get() != '(' && !stack1.Empty()) {
                 exit += stack1.pop();
                 exit += ' ';
             }
             if (stack1.get() == '(')
                 stack1.pop();
         } else if (i == '+' || i == '-') {
-            if (!stack1.isEmpty()) {
+            if (!stack1.Empty()) {
                 switch (stack1.get()) {
                     case '*': {
                         exit += '*';
@@ -52,7 +52,7 @@ std::string infx2pstfx(std::string inf) {
                 stack1.push(i);
             }
         } else if (i == '*' || i == '/') {
-            if (!stack1.isEmpty()) {
+            if (!stack1.Empty()) {
                 switch (stack1.get()) {
                     case '*': {
                         exit += '*';
@@ -73,8 +73,8 @@ std::string infx2pstfx(std::string inf) {
             }
         }
     }
-    if (!stack1.isEmpty()) {
-        while (!stack1.isEmpty()) {
+    if (!stack1.Empty()) {
+        while (!stack1.Empty()) {
             exit += stack1.pop();
             exit += ' ';
         }
